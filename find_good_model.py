@@ -23,6 +23,7 @@ import lightgbm as lgbm
 
 parser = argparse.ArgumentParser()
 parser.add_argument('-m','--model_type',default='svc',type=str,choices=['svc','lgbm','knn'])
+parser.add_argument('-b','--rebalance_type',default='smote',type=str,choices=['over_smote','none','under_random','over_random','combine_smotenn'])
 args = parser.parse_args()
 
 # load data
@@ -35,8 +36,8 @@ y = Y.to_numpy()
 y = (y*2).astype(int)
 X = dfX.loc[Y.index].to_numpy()
 
-model_type = args.model_type #svc, lgbm, knn
-
+model_type = args.model_type.lower() #svc, lgbm, knn
+rebalance_type = args.rebalance_type.lower() #smote, none, under, over
 verbose = False
 random_seed = 1234
 cv_param_folds = 5
@@ -47,7 +48,17 @@ n_jobs = -1
 pipeline = []
 
 pipeline.append(('scaler',StandardScaler()))
-pipeline.append(('resampler',SMOTE(random_state = random_seed)))
+if rebalance_type == 'over_smote':
+    pipeline.append(('resampler',SMOTE(random_state = random_seed)))
+elif rebalance_type == 'combine_smotenn':
+    pipeline.append(('resampler',SMOTEENN(random_state = random_seed)))    
+elif rebalance_type == 'under_random':
+    pipeline.append(('resampler',RandomUnderSampler(random_state = random_seed)))
+elif rebalance_type == 'over_random':
+    pipeline.append(('resampler',RandomOverSampler(random_state = random_seed)))
+elif rebalance_type == 'none':
+    pass
+
 
 if model_type == 'svc':
     pipeline.append(('model',sklearn.svm.SVC(verbose=verbose)))
@@ -117,4 +128,4 @@ test_acc = cv_select_results['test_accuracy'].mean()
 test_mcc = cv_select_results['test_mcc'].mean()
 test_f1 = cv_select_results['test_f1_macro'].mean()
 
-print(f'{model_type} | test_acc = {test_acc:.3f}; test_mcc = {test_mcc:.3f}; test_f1 = {test_f1:.3f}; test_mcc2 = {test_mcc2}; perm_mcc = {perm_mcc}')
+print(f'{model_type} | test_acc = {test_acc:.3f}; test_mcc = {test_mcc:.3f}; test_f1 = {test_f1:.3f}; test_mcc2 = {test_mcc2:.3f}; perm_mcc = {perm_mcc:.3f}')
