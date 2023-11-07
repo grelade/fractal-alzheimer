@@ -69,7 +69,7 @@ elif model_type == 'knn':
     param_grid = [{'n_neighbors': [2,3,4,5,6],
                    'weights': ['uniform', 'distance']}]
 elif model_type == 'lgbm':
-    pipeline.append(('model',lgbm.LGBMClassifier(verbose=int(verbose),n_jobs=n_jobs)))
+    pipeline.append(('model',lgbm.LGBMClassifier(verbose=2*int(verbose)-1,n_jobs=n_jobs)))
     param_grid = [{'num_leaves': [15,30,45],
                'max_depth': [5,10,15],
                'n_estimators': [20,40,60,80,100]}]
@@ -128,4 +128,8 @@ test_acc = cv_select_results['test_accuracy'].mean()
 test_mcc = cv_select_results['test_mcc'].mean()
 test_f1 = cv_select_results['test_f1_macro'].mean()
 
-print(f'{model_type} | test_acc = {test_acc:.3f}; test_mcc = {test_mcc:.3f}; test_f1 = {test_f1:.3f}; test_mcc2 = {test_mcc2:.3f}; perm_mcc = {perm_mcc:.3f}')
+results = f'{rebalance_type} {model_type} | test_acc = {test_acc:.3f}; test_mcc = {test_mcc:.3f}; test_f1 = {test_f1:.3f}; test_mcc2 = {test_mcc2:.3f}; perm_mcc = {perm_mcc:.3f}'
+
+with open('results.txt','a') as fp:
+    fp.write(results+'\n')
+print(results)
