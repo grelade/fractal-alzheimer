@@ -4,6 +4,8 @@ A feasibility study of usefulness of fractal-aware datasets in identifying Alzhe
 
 ### Dataset
 
+![OASIS-1 Dataset](dataplot.png)
+
 Dataset used in this study comprises of a set of Hurst exponents calculated using the [mfmri pipeline](https://github.com/Mark-Kac-Center/mfmri) on the [OASIS-1](https://www.oasis-brains.org/) data for structural MRI scans.
 
 Because the dataset is unbalanced, several resampling method were used (from the *imblearn* package):
